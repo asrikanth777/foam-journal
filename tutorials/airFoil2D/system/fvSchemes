@@ -14,30 +14,65 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+/*  Comments on what is happening here, based on my understanding (some things may be wrong)
+Grid is broken up into cells to solve governing equations over to understand cell content
+These are held at cell centers, but the solver needs to know how to communicate that information to neighboring cells and stuff
+Another thing is that the values are at the centers of cells and averaged, so we need to know at interfaces to know whats going on
+
+So with gauss's theorem, we instead change our view from the volume to the borders itself, and focus on what is changing
+it converts a volume integral to a surface integral
+
+    change inside = what flows in - what flows out
+
+another thing is diff between convection and diffusion
+convection - carries info downstream, flow direction matters
+diffusion - spreads out both directions, from most concentrated to least concentrated
+
+phi is the face flux, comes from the pressure-velocity coupling step (need to dive into this)
+
+How do we characterize this?
+- linear :          take the average of the cells between a face with respect to distance from cell centers
+- upwind :          consider flow direction and take cell before it (up the wind)
+                    it never overshoots, but blurs sharp features where there are large jumps in variables
+- linear upwind :   like upwind, upstream cell’s value + the spatial trend (gradient), extrapolated to the face
+- bounded :         for incompressible flow, divergence of velocity is 0 for continuity, but that isn't reached until convergance.
+                    this could cause source or sink terms, so we subtract it to keep solver stable. USED FOR STEADY STATE
+- corrected :       used to account for mesh skew, when cells are not exactly in a straight line (non-orthogonality)
+
+
+*/
+
+
 ddtSchemes
 {
     default         steadyState;
+    // this is to find a steady answer, like if our scenario was to run for an infinite period of time
+    // no time derivative, iterations arent time steps, and stability comes from relaxation (fvSolution)
+
 }
 
 gradSchemes
 {
-    default         Gauss linear;
+    default         Gauss linear; //green-gauss gradient with linearly interpolated face values
+    // used for computing gradients like grad(U)
+
 }
 
 divSchemes
 {
-    default         none;
-    div(phi,U)      bounded Gauss linearUpwind grad(U);
-    div(phi,nuTilda) bounded Gauss linearUpwind grad(nuTilda);
-    div((nuEff*dev2(T(grad(U))))) Gauss linear;
+    default         none; // means we much define each convection term, as shown below
+    div(phi,U)      bounded Gauss linearUpwind grad(U); // for velocity
+    div(phi,nuTilda) bounded Gauss linearUpwind grad(nuTilda); // turbulence
+    // linearUpwind: risk of negative nuTilda (must stay positive). safer: upwind, but smears sharp changes
+    div((nuEff*dev2(T(grad(U))))) Gauss linear; // viscous term, diffusive
 }
 
-laplacianSchemes
+laplacianSchemes // for diffusion
 {
     default         Gauss linear corrected;
 }
 
-interpolationSchemes
+interpolationSchemes // default  face interpolation for things that aren't explicitely specified
 {
     default         linear;
 }
@@ -50,6 +85,10 @@ snGradSchemes
 wallDist
 {
     method meshWave;
+    // using Spalart-Allmaras, it has a destruction term (dont kknow what this is)
+    // need to determine wall distance d, which is in said destruction term
+    // meshWave: propagates distance across neighboring faces, but loses accuracy on strongly curved or skewed near-wall meshes
+    // Poisson: solves a PDE for distance. better for problem above but not as fast as meshWave
 }
 
 
