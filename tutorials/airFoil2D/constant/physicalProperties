@@ -14,10 +14,18 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+// viscosityModel constant: Newtonian fluid, viscosity fixed everywhere (molecular only; nut from momentumTransport is added on top to nuEff)
+
+// rho: for incompressible flow, density is constant, so it drops out of the governing equations
+//      as such, the solver folds density into pressure instead of solving for it separately, so p is in m2/s2, not Pa
+//      changing rho doesn't change the solution; it's only a reference value for converting kinematic results to real units
+
+// nu: kinematic viscosity [m2/s]; air-like (real air ≈ 1.5e-5). Only matters through Re = U*c/nu
+
 viscosityModel  constant;
 
 rho     1;
-
+ 
 nu      1e-05;
 
 // ************************************************************************* //

@@ -14,6 +14,16 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+/*
+three options for simulationType
+
+laminar - no turbulence model; resolves everything (true laminar flow, or DNS on a fine enough mesh)
+RAS     - models all turbulence via eddy viscosity; time-averaged flow, can run steady
+LES     - resolves large eddies, models small ones; always unsteady and 3D (DES lives here too)
+
+*/
+
+
 simulationType RAS;
 
 RAS
@@ -21,6 +31,9 @@ RAS
     model           SpalartAllmaras;
 
     turbulence      on;
+    
+// turbulence on  - SA model active, computes nut
+//            off - model skipped, nut = 0; handy for checking if the turbulence model is causing a problem
 
 }
 
