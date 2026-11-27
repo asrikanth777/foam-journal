@@ -16,8 +16,14 @@ FoamFile
 
 dimensions      [kinematicPressure];
 
+// reference pressure?
+// in incomp flow, pressure diff drives the flow
 internalField   uniform 0;
 
+
+// typically, either velocity or pressure should be fixed and the other "floats"
+// fixing both or none will lead to a farfield
+// that reflects disturbances back or lose stability
 boundaryField
 {
     inlet
@@ -34,6 +40,9 @@ boundaryField
 
     walls
     {
+        // standard BL treatment
+        // assumes pressure is constant through thickness
+        // of a thin BL
         type            zeroGradient;
     }
 

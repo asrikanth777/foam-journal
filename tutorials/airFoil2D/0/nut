@@ -32,11 +32,18 @@ boundaryField
         freestreamValue uniform 0.14;
     }
 
+    // spalding's law = single formula to fit velocity profile to model velocity close to wall
+
+    // from claude 
+    // nutUSpaldingWallFunction: Spalding's law (one formula covering viscous → buffer → log layer) gives true wall shear at any y+;
+    //                           wall nut is set as a correction so the coarse gradient matches it — not physical turbulence. value 0 = placeholder.
+    //                           assumes attached equilibrium BL → least reliable near separation; check y+ after running
+    
     walls
     {
         type            nutUSpaldingWallFunction;
         value           uniform 0;
-    }
+    } // zero is a placeholder that gets replaced as the function iteratively solves for it
 
     frontAndBack
     {

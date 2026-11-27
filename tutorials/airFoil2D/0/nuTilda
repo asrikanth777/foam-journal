@@ -44,4 +44,13 @@ boundaryField
     }
 }
 
+// using 0.14 is pretty high, for molecular viscosity with 0.14/1e-5 = 14000, its above typical 
+// values of being 3-5x of nu.
+
+// from claude
+// freestream nuTilda = nut = 0.14 → nuTilda/nu = 14,000; SA guidance is ~3–5×nu (≈ 3e-5–5e-5 here)
+//   likely set high for robustness (extra viscosity damps everything) — UNVERIFIED, my hypothesis
+//   SA barely destroys nuTilda far from walls → excess carries into BL → expect thicker BL, higher drag
+//   TODO: rerun with ~4e-5 (internalField + freestreamValue, in both nuTilda and nut) and compare Cd/Cl
+
 // ************************************************************************* //

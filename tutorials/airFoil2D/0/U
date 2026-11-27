@@ -16,6 +16,8 @@ FoamFile
 
 dimensions      [velocity];
 
+
+// at an angle of attack of about 8deg
 internalField   uniform (25.75 3.62 0);
 
 boundaryField
@@ -37,7 +39,7 @@ boundaryField
         type            noSlip;
     }
 
-    frontAndBack
+    frontAndBack //symmetry
     {
         type            empty;
     }
