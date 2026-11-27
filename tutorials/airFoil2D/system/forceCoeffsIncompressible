@@ -1,0 +1,29 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  14
+     \\/     M anipulation  |
+-------------------------------------------------------------------------------
+Description
+    Calculates lift, drag and moment coefficients by summing forces on
+    specified patches for a case where the solver is incompressible; i.e.,
+    pressure is kinematic and has units of m^2/s^2.
+
+\*---------------------------------------------------------------------------*/
+
+#includeEtc "caseDicts/functions/forces/forceCoeffsIncompressible.cfg"
+
+patches     (walls);             // airfoil surface (type wall in polyMesh/boundary)
+
+magUInf     26.0;                // |U| from 0/U: sqrt(25.75² + 3.62²)
+lRef        35.0492;             // chord (walls x-range in ParaView); only used for Cm
+Aref        1.75246;             // 2D: chord × span = 35.0492 × 0.05; used for Cl, Cd
+
+CofR        (-8.787 0 0);        // quarter chord: x_LE + 0.25·c = -17.5492 + 8.7623; only affects Cm
+
+liftDir     (-0.139 0.990 0);    // perpendicular to freestream (8° AoA) — NOT template's (0 0 1)
+dragDir     (0.990 0.139 0);     // along freestream = U/|U|
+pitchAxis   (0 0 1);             // z, since airfoil lies in x-y plane
+
+// ************************************************************************* //
